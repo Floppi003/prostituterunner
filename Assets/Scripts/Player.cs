@@ -5,7 +5,6 @@ using UnityEngine;
 public class Player : MonoBehaviour {
 
 	// enums 
-
 	public enum Lane {
 		Left = 0,
 		Middle = 1,
@@ -24,6 +23,12 @@ public class Player : MonoBehaviour {
 	public Lane lane = Lane.Middle; 
 	public PlayerNumber playerNumber = PlayerNumber.Player1;
 	public float unitsPerSecond = 1.0f;
+	public float speedMultiplier = 1.7f;
+	public float speedTime = 2.5f;
+
+	// private variables
+	private float speedTimeRemaining = 0.0f;
+
 
 
 	// Use this for initialization
@@ -34,6 +39,10 @@ public class Player : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 
+		// decrease times
+		this.speedTimeRemaining -= Time.deltaTime;
+	
+
 		// set which keys should move the player left/right
 		string leftKey = "left";
 		string rightKey = "right";
@@ -42,17 +51,35 @@ public class Player : MonoBehaviour {
 			rightKey = "d";
 		}
 
+		//Debug.DrawRay(this.transform.position, this.transform.forward * 5.0f, Color.magenta, 5.0f);
+		//Debug.DrawRay(this.transform.position, this.transform.forward * (-1), Color.magenta, 20, true);
+
 		// check for keyboard events to update current lane
 		if (Input.GetKeyDown(leftKey)) {
-			// left arrow key was pressed
-			if (this.lane == Lane.Middle) this.lane = Lane.Left;
-			if (this.lane == Lane.Right) this.lane = Lane.Middle;
+			
+			// check if the left side is free
+			RaycastHit hit;
+			if (Physics.Raycast (this.transform.position, this.transform.forward * (-1), out hit, 5.0f)) {
+				Debug.Log ("Left side is taken!");
+			} else {
+				// left arrow key was pressed
+				if (this.lane == Lane.Middle) this.lane = Lane.Left;
+				if (this.lane == Lane.Right) this.lane = Lane.Middle;
+			}
 		}
 
 		if (Input.GetKeyDown(rightKey)) {
-			// right arrow key was pressed
-			if (this.lane == Lane.Middle) this.lane = Lane.Right;
-			if (this.lane == Lane.Left) this.lane = Lane.Middle;
+			
+			// check if the right side is free
+			RaycastHit hit;
+			if (Physics.Raycast (this.transform.position, this.transform.forward * (1), out hit, 5.0f)) {
+				Debug.Log ("Right side is taken!");
+
+			} else {
+				// right arrow key was pressed
+				if (this.lane == Lane.Middle) this.lane = Lane.Right;
+				if (this.lane == Lane.Left) this.lane = Lane.Middle;
+			}
 		}
 
 
@@ -60,7 +87,11 @@ public class Player : MonoBehaviour {
 		this.setPositionBasedOnLane();
 
 		// move the player forward
-		this.transform.Translate(this.unitsPerSecond * Time.deltaTime * (-1), 0.0f, 0.0f);
+		float realSpeed = this.unitsPerSecond;
+		if (this.speedTimeRemaining > 0) {
+			realSpeed = realSpeed * this.speedMultiplier;
+		}
+		this.transform.Translate(realSpeed * Time.deltaTime * (-1), 0.0f, 0.0f);
 	}
 
 	void Awake() {
@@ -90,5 +121,25 @@ public class Player : MonoBehaviour {
 			this.transform.position = new Vector3(startPosition.x, startPosition.y, -3.0f);
 			break;
 		}
+	}
+
+
+
+
+// PRAGMA MARK: - Trigger
+
+	void OnTriggerEnter(Collider other) {
+		Debug.Log ("OnTriggerEnter: " + other.name);
+		if (other.name.Equals("Speeder(Clone)")) {
+			this.speedTimeRemaining = this.speedTime;
+		}
+	}
+
+	void OnTriggerExit(Collider other) {
+		Debug.Log ("OnTriggerExit");
+	} 
+
+	void OnTriggerStay(Collider other) {
+		Debug.Log ("OnTriggerStay");
 	}
 }
