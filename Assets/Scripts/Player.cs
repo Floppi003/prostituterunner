@@ -25,13 +25,19 @@ public class Player : MonoBehaviour {
 	public PlayerNumber playerNumber = PlayerNumber.Player1;
 	public float unitsPerSecond = 1.0f;
 	public float speedMultiplier = 1.7f;
-	public float womanMultiplier = 0.65f;
+	//public float womanMultiplier = 0.65f;
+	public float prostituteMultiplier = 0.85f;
+	public float grannyMultiplier = 0.55f;
+	public float fattyMultiplier = 0.7f;
 	public float speedTime = 2.5f;
+	public float cakeTime = 2.0f;
 
 	// private variables
 	private float speedTimeRemaining = 0.0f;
 	private Queue<Woman> women = new Queue<Woman>();
-	private int money;
+	private int money = 0;
+	private int cake = 0;
+	private float cakeTimeRemaining = 0.0f;
 
 
 	// Use this for initialization
@@ -44,16 +50,22 @@ public class Player : MonoBehaviour {
 
 		// decrease times
 		this.speedTimeRemaining -= Time.deltaTime;
+		this.cakeTimeRemaining -= Time.deltaTime;
 	
 
 		// set which keys should move the player left/right
 		string leftKey = "j";
 		string rightKey = "l";
 		string prostituteKey = "u";
+		string fatKey = "o";
+		string cakeKey = "i";
+
 		if (this.playerNumber == PlayerNumber.Player1) {
 			leftKey = "a";
 			rightKey = "d";
 			prostituteKey = "q";
+			fatKey = "e";
+			cakeKey = "w";
 		}
 
 		//Debug.DrawRay(this.transform.position, this.transform.forward * 5.0f, Color.magenta, 5.0f);
@@ -103,6 +115,62 @@ public class Player : MonoBehaviour {
 			}
 		}
 
+		if (Input.GetKeyDown (fatKey)) {
+			// check if the current woman is a fatty
+			if (this.women.Count > 0) {
+				Woman woman = this.women.Peek ();
+				if (woman is FatWoman) {
+					FatWoman fatty = (FatWoman)woman;
+					fatty.loveNeeded--;
+					if (fatty.loveNeeded <= 0) {
+						// she got enough love, get rid of fatty
+						this.women.Dequeue();
+						this.updateWomenText();
+					}
+				}
+			}
+		}
+
+		// check if the cake button was touched
+		if (Input.GetKeyDown(cakeKey)) {
+			if (this.cake > 0) {
+				// "cake" the other player
+				GameObject otherPlayer = null;
+				if (this.playerNumber == PlayerNumber.Player1) {
+					// cake player 2
+					otherPlayer = GameObject.Find("player2");
+				} else {
+					// cake player 2
+					otherPlayer = GameObject.Find("player1");
+				}
+
+				otherPlayer.GetComponent<Player>().cakePlayer();
+				this.cake--;
+				this.updateCakeText();
+			}
+		}
+
+		// check if the next women is a granny
+		if (this.women.Count > 0) {
+			Woman woman = this.women.Peek();
+			if (woman is GrandmaWoman) {
+				GrandmaWoman granny = (GrandmaWoman)woman;
+				granny.timeNeeded -= Time.deltaTime;
+
+				Debug.Log ("grandmaWoman time left: " + granny.timeNeeded);
+
+				// check if grandma time left is <= 0
+				if (granny.timeNeeded <= 0) {
+					this.women.Dequeue();
+					this.updateWomenText();
+				}
+			}
+		}
+
+
+		this.updateWomanHUD();
+		this.updateCakePlane();
+
 
 		// update the position based on the current lane
 		this.setPositionBasedOnLane();
@@ -112,12 +180,12 @@ public class Player : MonoBehaviour {
 
 		if (this.women.Count > 0) {
 			// there is a woman! slow player down
-			realSpeed = realSpeed * this.womanMultiplier;
+			Woman woman = this.women.Peek();
+			realSpeed = realSpeed * woman.womanMultiplier;
 		}
 
 		if (this.speedTimeRemaining > 0) { // make player faster if it was on a speeder
 			realSpeed = realSpeed * this.speedMultiplier;
-
 		} 
 
 
@@ -153,6 +221,34 @@ public class Player : MonoBehaviour {
 		}
 	}
 
+	public void cakePlayer() {
+		this.cakeTimeRemaining = this.cakeTime;
+
+
+	}
+
+	private void updateCakePlane() {
+		// get the cakePanel GameObject
+		GameObject canvas = null;
+		if (this.playerNumber == PlayerNumber.Player1) {
+			canvas = GameObject.Find ("CanvasP1");
+		} else {
+			canvas = GameObject.Find ("CanvasP2");
+		}
+
+		GameObject cakePanel = canvas.transform.FindChild("CakePanel").gameObject;
+
+		// show or hide the cake panel
+		if (this.cakeTimeRemaining > 0.0f) {
+			// show cake panel
+			cakePanel.GetComponent<Image>().enabled = true;
+
+		} else {
+			// hide cake panel
+			cakePanel.GetComponent<Image>().enabled = false;
+		}
+	}
+
 	private void updateMoneyText() {
 		// get correct player UI
 		GameObject moneyTextUI = null;
@@ -181,13 +277,93 @@ public class Player : MonoBehaviour {
 		womenTF.text = "" + this.women.Count;
 	}
 
+	private void updateWomanHUD() {
+
+		GameObject canvas = null;
+		if (this.playerNumber == PlayerNumber.Player1) {
+			canvas = GameObject.Find ("CanvasP1");
+		} else {
+			canvas = GameObject.Find ("CanvasP2");
+		}
+
+		bool showFatty = false;
+		bool showProstitution = false;
+
+		if (this.women.Count > 0) {
+			Woman woman = this.women.Peek();
+			if (woman is ProstituteWoman) {
+				showProstitution = true;
+				showFatty = false;
+			}
+
+			if (woman is FatWoman) {
+				showFatty = true;
+				showProstitution = false;
+			} 
+		}
+
+		if (showFatty == true) {
+			// show fat UI
+			GameObject fatImageUI = canvas.transform.FindChild ("FattyImage").gameObject;
+			Image fatImage = fatImageUI.GetComponent<Image> ();
+			fatImage.enabled = true;
+
+			GameObject fatButtonUI = canvas.transform.FindChild ("FattyButton").gameObject;
+			Image fatButton = fatButtonUI.GetComponent<Image> ();
+			fatButton.enabled = true;
+		
+		} else {
+			// show fat UI
+			GameObject fatImageUI = canvas.transform.FindChild ("FattyImage").gameObject;
+			Image fatImage = fatImageUI.GetComponent<Image> ();
+			fatImage.enabled = false;
+
+			GameObject fatButtonUI = canvas.transform.FindChild ("FattyButton").gameObject;
+			Image fatButton = fatButtonUI.GetComponent<Image> ();
+			fatButton.enabled = false;
+		}
+
+		if (showProstitution == true) {
+			// show prostitute UI
+			GameObject prostituteImageUI = canvas.transform.FindChild("ProstituteImage").gameObject;
+			Image prostituteImage = prostituteImageUI.GetComponent<Image>();
+			prostituteImage.enabled = true;
+
+			GameObject prostituteButtonUI = canvas.transform.FindChild ("ProstituteButton").gameObject;
+			Image prostituteButton = prostituteButtonUI.GetComponent<Image>();
+			prostituteButton.enabled = true;
+
+		} else {
+			// show prostitute UI
+			GameObject prostituteImageUI = canvas.transform.FindChild("ProstituteImage").gameObject;
+			Image prostituteImage = prostituteImageUI.GetComponent<Image>();
+			prostituteImage.enabled = false;
+
+			GameObject prostituteButtonUI = canvas.transform.FindChild ("ProstituteButton").gameObject;
+			Image prostituteButton = prostituteButtonUI.GetComponent<Image>();
+			prostituteButton.enabled = false;
+		}
+	}
+
+	private void updateCakeText() {
+		GameObject canvas = null;
+		if (this.playerNumber == PlayerNumber.Player1) {
+			canvas = GameObject.Find ("CanvasP1");
+		} else {
+			canvas = GameObject.Find ("CanvasP2");
+		}
+
+		GameObject cakeTextUI = canvas.transform.FindChild("CakeText").gameObject;
+
+		cakeTextUI.GetComponent<Text> ().text = "" + this.cake;
+	}
+
 
 
 
 // PRAGMA MARK: - Trigger
 
 	void OnTriggerEnter(Collider other) {
-		Debug.Log ("OnTriggerEnter: " + other.name);
 
 		// check if it collided with speeder
 		if (other.CompareTag ("Speeder")) {
@@ -197,22 +373,62 @@ public class Player : MonoBehaviour {
 		} else if (other.CompareTag ("Prostitute")) {
 			// make player slow again
 			this.speedTimeRemaining = 0.0f;
-			Destroy(other.gameObject);
+			Destroy (other.gameObject);
 
 			// Add Prostitute to woman queue
-			Woman prostitute = new ProstituteWoman();
+			Woman prostitute = new ProstituteWoman (this.prostituteMultiplier);
 			this.women.Enqueue (prostitute);
 			this.updateWomenText ();
 
 		} else if (other.CompareTag ("Money")) {
 			// make random money value
-			int moneyValue = Random.Range(0, 6) * 10 + 70; // range: 70 - 120
+			int moneyValue = Random.Range (0, 6) * 10 + 70; // range: 70 - 120
 			this.money += moneyValue;
 
-			this.updateMoneyText();
+			this.updateMoneyText ();
 
 			// destroy money object
 			Destroy (other.gameObject);
+
+			// create a cake object where money was
+			GameObject logic = GameObject.Find("Logic");
+			logic.GetComponent<WorldBuilder> ().createCakeAtLocation (other.transform.position, this.playerNumber);
+
+		} else if (other.CompareTag ("Fatty")) {
+			// make player slow again
+			this.speedTimeRemaining = 0.0f;
+			Destroy (other.gameObject);
+
+			// add Fatty to woman queue
+			Woman fatty = new FatWoman (this.fattyMultiplier);
+			this.women.Enqueue (fatty);
+			this.updateWomenText ();
+
+		} else if (other.CompareTag ("Granny")) {
+			Debug.Log ("collided with granny");
+			// make player slow again
+			this.speedTimeRemaining = 0.0f;
+			Destroy (other.gameObject);
+
+			// add granny to woman queue
+			Woman granny = new GrandmaWoman(this.grannyMultiplier);
+			this.women.Enqueue (granny);
+			this.updateWomenText();
+		}
+
+		// cake comparison... first find out which cakes are important
+		string importantCakeTag;
+		if (this.playerNumber == PlayerNumber.Player1) {
+			importantCakeTag = "CakeByP2";
+		} else {
+			importantCakeTag = "CakeByP1";
+		}
+
+		if (other.CompareTag(importantCakeTag)) {
+			// collected a cake by the other player! 
+			this.cake++;
+			this.updateCakeText ();
+			Destroy(other.gameObject);
 		}
 	}
 

@@ -11,6 +11,7 @@ public class WorldBuilder : MonoBehaviour {
 	public GameObject granny;
 	public GameObject fatty;
 	public GameObject money;
+	public GameObject cake;
 
 	public int speederProbability = 50;
 	public int womanProbability = 70;
@@ -122,6 +123,23 @@ public class WorldBuilder : MonoBehaviour {
 					woman.transform.position = new Vector3(this.worldXProgress, this.prostitute.transform.position.y, 3.0f);
 				}
 			}
+		}
+	}
+
+
+
+// PRAGMA MARK: Custom Functions
+
+	public void createCakeAtLocation(Vector3 location, Player.PlayerNumber spawnedByPlayer) {
+		GameObject cake = Instantiate(this.cake);
+		cake.transform.position = location;
+
+		Debug.Log ("creating cake spawned by player " + spawnedByPlayer);
+
+		if (spawnedByPlayer == Player.PlayerNumber.Player1) { 
+			cake.tag = "CakeByP1";
+		} else if (spawnedByPlayer == Player.PlayerNumber.Player2) {
+			cake.tag = "CakeByP2";
 		}
 	}
 }
