@@ -16,7 +16,7 @@ public class Woman {
 
 public class ProstituteWoman: Woman {
 	// public variables
-	public int moneyNeeded = 250;
+	public int moneyNeeded = 150;
 
 	// private variables
 	private int moneyNeededLeft;

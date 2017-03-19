@@ -38,11 +38,15 @@ public class Player : MonoBehaviour {
 	private int money = 0;
 	private int cake = 0;
 	private float cakeTimeRemaining = 0.0f;
+	private float startXPosition;
+	private float goalXPosition;
 
 
 	// Use this for initialization
 	void Start () {
-		
+		this.startXPosition = this.transform.position.x;
+		float worldLength = GameObject.Find ("Logic").GetComponent<WorldBuilder> ().getWorldXLength();
+		this.goalXPosition = this.startXPosition + worldLength;
 	}
 	
 	// Update is called once per frame
@@ -188,9 +192,21 @@ public class Player : MonoBehaviour {
 			realSpeed = realSpeed * this.speedMultiplier;
 		} 
 
+		if (this.transform.position.x < this.goalXPosition) { // only move forward if not at the goal yet
+			this.transform.Translate (realSpeed * Time.deltaTime * (-1), 0.0f, 0.0f);
+		}
 
-		this.transform.Translate(realSpeed * Time.deltaTime * (-1), 0.0f, 0.0f);
-	}
+		// update position of minimap
+		// get percentage of progress
+		float totalDistance = this.goalXPosition - this.startXPosition; // distance
+		float distanceRun = this.transform.position.x - this.startXPosition; // current progress
+		float progress = distanceRun / totalDistance;
+		if (this.playerNumber == PlayerNumber.Player1) {
+			GameObject.Find ("Logic").GetComponent<MiniMapManager> ().setProgressPlayer1(progress);
+		} else {
+			GameObject.Find ("Logic").GetComponent<MiniMapManager> ().setProgressPlayer2(progress);
+		}
+ 	}
 
 	void Awake() {
 		// allowed to talk to other objects here already
@@ -208,7 +224,7 @@ public class Player : MonoBehaviour {
 
 		switch (this.lane) {
 		case Lane.Left:
-			this.transform.position = new Vector3(startPosition.x, startPosition.y, 3.0f);
+			this.transform.position = new Vector3(startPosition.x, startPosition.y, 3.5f);
 			break;
 
 		case Lane.Middle:
@@ -216,7 +232,7 @@ public class Player : MonoBehaviour {
 			break;
 
 		case Lane.Right:
-			this.transform.position = new Vector3(startPosition.x, startPosition.y, -3.0f);
+			this.transform.position = new Vector3(startPosition.x, startPosition.y, -3.5f);
 			break;
 		}
 	}
@@ -382,7 +398,8 @@ public class Player : MonoBehaviour {
 
 		} else if (other.CompareTag ("Money")) {
 			// make random money value
-			int moneyValue = Random.Range (0, 6) * 10 + 70; // range: 70 - 120
+			//int moneyValue = Random.Range (0, 6) * 10 + 70; // range: 70 - 120
+			int moneyValue = 100;
 			this.money += moneyValue;
 
 			this.updateMoneyText ();

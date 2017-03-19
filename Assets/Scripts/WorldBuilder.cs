@@ -13,17 +13,22 @@ public class WorldBuilder : MonoBehaviour {
 	public GameObject money;
 	public GameObject cake;
 
+	public int numberOfWorldParts = 100;
 	public int speederProbability = 50;
 	public int womanProbability = 70;
 	public int moneyProbability = 30;
 
 	// private variables
 	private float worldXProgress = 0.0f;
-	private float buildNextWorldPartDelta = 20.0f;
+	private float buildNextWorldPartDelta = 60.0f;
+	private int numberOfWorldPartsCreated = 0;
+
+	/*
 	private ArrayList leftWomens = new ArrayList();
 	private ArrayList middleWomens = new ArrayList();
 	private ArrayList rightWomens = new ArrayList();
-
+	*/
+	
 	// Use this for initialization
 	void Start () {
 		this.worldXProgress = this.worldPart.transform.position.x;
@@ -32,6 +37,11 @@ public class WorldBuilder : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 		// get the position of both players and check if new world parts should be created
+
+		if (this.numberOfWorldPartsCreated >= (this.numberOfWorldParts + 4)) {
+			return;
+		}
+
 		GameObject player1 = GameObject.Find("player1");
 		GameObject player2 = GameObject.Find ("player2");
 
@@ -43,17 +53,23 @@ public class WorldBuilder : MonoBehaviour {
 			GameObject newWorldPart = Instantiate(this.worldPart);
 
 			// try to load new texture on the image
-			Texture2D testTexture = Resources.Load("regularshow") as Texture2D;
+			Texture2D testTexture = Resources.Load("house_left_01") as Texture2D;
 			Material testMaterial = new Material (Shader.Find("Standard"));
 			testMaterial.mainTexture = testTexture;
-			GameObject wallLeft = newWorldPart.transform.Find ("wall_left").gameObject;
-			GameObject wallRight = newWorldPart.transform.Find ("wall_right").gameObject;
+			GameObject wallLeft = newWorldPart.transform.Find ("Houses_L").gameObject;
+			GameObject wallRight = newWorldPart.transform.Find ("Houses_R").gameObject;
 			//Debug.Log ("wallleft: " + wallLeft);
 			wallRight.GetComponentInParent<MeshRenderer> ().material = testMaterial;
 			wallLeft.GetComponent<MeshRenderer> ().material = testMaterial;
 
-			newWorldPart.transform.position = new Vector3 (this.worldXProgress + 10.0f, this.worldPart.transform.position.y, this.worldPart.transform.position.z);
-			this.worldXProgress += 10.0f;
+			newWorldPart.transform.position = new Vector3 (this.worldXProgress + 16.0f, this.worldPart.transform.position.y, this.worldPart.transform.position.z);
+			this.worldXProgress += 16.0f;
+			this.numberOfWorldPartsCreated++;
+
+			// no items or women anymore after reaching goal
+			if (this.numberOfWorldPartsCreated >= this.numberOfWorldParts) {
+				return;	
+			}
 
 
 			// make random speeder
@@ -67,12 +83,13 @@ public class WorldBuilder : MonoBehaviour {
 				speederLane = Random.Range(1, 4);
 
 				// make random x variance
-				speederX = Random.Range(0, 9) - 4;
+				speederX = Random.Range(0, 15) - 7;
 
-				speeder.transform.position = new Vector3 (this.worldXProgress + speederX, this.speeder.transform.position.y, (speederLane - 2) * (3.0f));
+				speeder.transform.position = new Vector3 (this.worldXProgress + speederX, this.speeder.transform.position.y, (speederLane - 2) * (3.5f));
 				speeder.name = "Speeder";
 			}
 
+			// make random money
 			int randomMoney = Random.Range (0, 100);
 			if (randomMoney < this.moneyProbability) {
 				GameObject money = Instantiate (this.money);
@@ -84,9 +101,9 @@ public class WorldBuilder : MonoBehaviour {
 				}
 
 				// make random x variance
-				int xVariance = Random.Range(0, 9) - 4;
+				int xVariance = Random.Range(0, 15) - 7;
 
-				money.transform.position = new Vector3 (this.worldXProgress + xVariance, this.money.transform.position.y, (moneyLane - 2) * 3.0f);
+				money.transform.position = new Vector3 (this.worldXProgress + xVariance, this.money.transform.position.y, (moneyLane - 2) * 3.5f);
 			}
 
 
@@ -113,14 +130,14 @@ public class WorldBuilder : MonoBehaviour {
 				int lane = Random.Range(0, 3);
 				if (lane == 0) {
 					// left lane
-					woman.transform.position = new Vector3(this.worldXProgress, this.prostitute.transform.position.y, -3.0f);
+					woman.transform.position = new Vector3(this.worldXProgress, this.prostitute.transform.position.y, -3.5f);
 				} else if (lane == 1) {
 					// middle lane
 					woman.transform.position = new Vector3(this.worldXProgress, this.prostitute.transform.position.y, 0.0f);
 
 				} else {
 					// right lane
-					woman.transform.position = new Vector3(this.worldXProgress, this.prostitute.transform.position.y, 3.0f);
+					woman.transform.position = new Vector3(this.worldXProgress, this.prostitute.transform.position.y, 3.5f);
 				}
 			}
 		}
@@ -141,5 +158,9 @@ public class WorldBuilder : MonoBehaviour {
 		} else if (spawnedByPlayer == Player.PlayerNumber.Player2) {
 			cake.tag = "CakeByP2";
 		}
+	}
+
+	public float getWorldXLength() {
+		return this.numberOfWorldParts * 16.0f;
 	}
 }
