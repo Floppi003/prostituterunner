@@ -1,0 +1,181 @@
+
+grannyscaled.png
+size: 1024,1024
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+Set1
+  rotate: false
+  xy: 562, 701
+  size: 56, 93
+  orig: 56, 93
+  offset: 0, 0
+  index: -1
+Set10
+  rotate: false
+  xy: 620, 714
+  size: 65, 80
+  orig: 65, 80
+  offset: 0, 0
+  index: -1
+Set11
+  rotate: false
+  xy: 687, 714
+  size: 66, 79
+  orig: 66, 79
+  offset: 0, 0
+  index: -1
+Set12
+  rotate: false
+  xy: 204, 342
+  size: 85, 103
+  orig: 85, 103
+  offset: 0, 0
+  index: -1
+Set13
+  rotate: true
+  xy: 567, 796
+  size: 81, 125
+  orig: 81, 125
+  offset: 0, 0
+  index: -1
+Set14
+  rotate: false
+  xy: 316, 524
+  size: 225, 115
+  orig: 225, 115
+  offset: 0, 0
+  index: -1
+Set15
+  rotate: false
+  xy: 567, 879
+  size: 274, 128
+  orig: 274, 128
+  offset: 0, 0
+  index: -1
+Set16
+  rotate: false
+  xy: 317, 641
+  size: 220, 169
+  orig: 220, 169
+  offset: 0, 0
+  index: -1
+Set17
+  rotate: false
+  xy: 317, 812
+  size: 248, 195
+  orig: 248, 195
+  offset: 0, 0
+  index: -1
+Set18
+  rotate: true
+  xy: 755, 732
+  size: 61, 48
+  orig: 61, 48
+  offset: 0, 0
+  index: -1
+Set19
+  rotate: false
+  xy: 694, 795
+  size: 112, 82
+  orig: 112, 82
+  offset: 0, 0
+  index: -1
+Set2
+  rotate: false
+  xy: 179, 147
+  size: 51, 102
+  orig: 51, 102
+  offset: 0, 0
+  index: -1
+Set20
+  rotate: false
+  xy: 843, 867
+  size: 174, 140
+  orig: 174, 140
+  offset: 0, 0
+  index: -1
+Set21
+  rotate: true
+  xy: 139, 63
+  size: 40, 20
+  orig: 40, 20
+  offset: 0, 0
+  index: -1
+Set22
+  rotate: true
+  xy: 539, 699
+  size: 111, 21
+  orig: 111, 21
+  offset: 0, 0
+  index: -1
+Set23
+  rotate: true
+  xy: 291, 334
+  size: 111, 21
+  orig: 111, 21
+  offset: 0, 0
+  index: -1
+Set24
+  rotate: false
+  xy: 2, 2
+  size: 111, 22
+  orig: 111, 22
+  offset: 0, 0
+  index: -1
+Set25
+  rotate: true
+  xy: 204, 447
+  size: 207, 110
+  orig: 207, 110
+  offset: 0, 0
+  index: -1
+Set3
+  rotate: false
+  xy: 179, 251
+  size: 77, 89
+  orig: 77, 89
+  offset: 0, 0
+  index: -1
+Set4
+  rotate: false
+  xy: 443, 446
+  size: 88, 76
+  orig: 88, 76
+  offset: 0, 0
+  index: -1
+Set5
+  rotate: false
+  xy: 2, 105
+  size: 175, 235
+  orig: 175, 235
+  offset: 0, 0
+  index: -1
+Set6
+  rotate: false
+  xy: 2, 342
+  size: 200, 312
+  orig: 200, 312
+  offset: 0, 0
+  index: -1
+Set7
+  rotate: true
+  xy: 2, 26
+  size: 77, 135
+  orig: 77, 135
+  offset: 0, 0
+  index: -1
+Set8
+  rotate: true
+  xy: 316, 444
+  size: 78, 125
+  orig: 78, 125
+  offset: 0, 0
+  index: -1
+Set9
+  rotate: false
+  xy: 2, 656
+  size: 313, 351
+  orig: 313, 351
+  offset: 0, 0
+  index: -1

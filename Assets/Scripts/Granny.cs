@@ -19,6 +19,6 @@ public class Granny : MonoBehaviour {
 
 	// Update is called once per frame
 	void Update () {
-		this.transform.Translate (this.transform.forward * (-1) * this.actualSpeed * Time.deltaTime);
+		this.transform.Translate (this.transform.right * (1) * this.actualSpeed * Time.deltaTime);
 	}
 }

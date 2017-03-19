@@ -19,6 +19,6 @@ public class Fatty : MonoBehaviour {
 
 	// Update is called once per frame
 	void Update () {
-		this.transform.Translate (this.transform.forward * (-1) * this.actualSpeed * Time.deltaTime);
+		this.transform.Translate (this.transform.right * this.actualSpeed * Time.deltaTime);
 	}
 }

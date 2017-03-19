@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class Player : MonoBehaviour {
 
@@ -21,6 +22,10 @@ public class Player : MonoBehaviour {
 
 
 	// public variables
+	public GameObject grabonGranny;
+	public GameObject grabonFatty;
+	public GameObject grabonProstitute;
+
 	public Lane lane = Lane.Middle; 
 	public PlayerNumber playerNumber = PlayerNumber.Player1;
 	public float unitsPerSecond = 1.0f;
@@ -80,9 +85,15 @@ public class Player : MonoBehaviour {
 			
 			// check if the left side is free
 			RaycastHit hit;
+			bool allowLaneChange = true;
 			if (Physics.Raycast (this.transform.position, this.transform.forward * (-1), out hit, 5.0f)) {
-				Debug.Log ("Left side is taken!");
-			} else {
+				if (hit.collider.CompareTag ("Player")) {
+					// player was hit, so don't allow change of lane
+					allowLaneChange = false;
+				}
+			} 
+
+			if (allowLaneChange) {
 				// left arrow key was pressed
 				if (this.lane == Lane.Middle) this.lane = Lane.Left;
 				if (this.lane == Lane.Right) this.lane = Lane.Middle;
@@ -93,10 +104,15 @@ public class Player : MonoBehaviour {
 			
 			// check if the right side is free
 			RaycastHit hit;
+			bool allowLaneChange = true;
 			if (Physics.Raycast (this.transform.position, this.transform.forward * (1), out hit, 5.0f)) {
-				Debug.Log ("Right side is taken!");
+				if (hit.collider.CompareTag ("Player")) {
+					allowLaneChange = false;
+				}
 
-			} else {
+			} 
+
+			if (allowLaneChange) {
 				// right arrow key was pressed
 				if (this.lane == Lane.Middle) this.lane = Lane.Right;
 				if (this.lane == Lane.Left) this.lane = Lane.Middle;
@@ -194,6 +210,33 @@ public class Player : MonoBehaviour {
 
 		if (this.transform.position.x < this.goalXPosition) { // only move forward if not at the goal yet
 			this.transform.Translate (realSpeed * Time.deltaTime * (-1), 0.0f, 0.0f);
+		}
+
+		// check if both players are in the goal
+		GameObject theOtherPlayer = null;
+		if (this.playerNumber == PlayerNumber.Player1) {
+			theOtherPlayer = GameObject.Find("player2");
+		} else {
+			theOtherPlayer = GameObject.Find("player1");
+		}
+
+		if (this.transform.position.x >= this.goalXPosition &&
+			theOtherPlayer.transform.position.x >= this.goalXPosition) {
+
+			GameObject canvas = null;
+			if (this.playerNumber == PlayerNumber.Player1) {
+				canvas = GameObject.Find("CanvasP2");
+			} else {
+				canvas = GameObject.Find("CanvasP1");
+			}
+
+			GameObject playAgainTextUI = canvas.transform.FindChild("PlayAgainText").gameObject;
+			playAgainTextUI.GetComponent<Text> ().enabled = true;
+
+			// already at goal! reload scene when pressing space bar
+			if (Input.GetKeyDown(KeyCode.Space)) {
+				SceneManager.LoadScene("Main");
+			}
 		}
 
 		// update position of minimap
@@ -304,19 +347,33 @@ public class Player : MonoBehaviour {
 
 		bool showFatty = false;
 		bool showProstitution = false;
+		bool showGranny = false;
 
 		if (this.women.Count > 0) {
 			Woman woman = this.women.Peek();
 			if (woman is ProstituteWoman) {
 				showProstitution = true;
 				showFatty = false;
+				showGranny = false;
 			}
 
 			if (woman is FatWoman) {
 				showFatty = true;
 				showProstitution = false;
+				showGranny = false;
 			} 
+
+			if (woman is GrandmaWoman) {
+				showGranny = true;
+				showProstitution = false;
+				showFatty = false;
+			}
 		}
+
+		// show/hide grab ons
+		this.grabonFatty.GetComponent<MeshRenderer>().enabled = showFatty;
+		this.grabonGranny.GetComponent<MeshRenderer>().enabled = showGranny;
+		this.grabonProstitute.GetComponent<MeshRenderer>().enabled = showProstitution;
 
 		if (showFatty == true) {
 			// show fat UI
@@ -422,7 +479,7 @@ public class Player : MonoBehaviour {
 			this.updateWomenText ();
 
 		} else if (other.CompareTag ("Granny")) {
-			Debug.Log ("collided with granny");
+			//Debug.Log ("collided with granny");
 			// make player slow again
 			this.speedTimeRemaining = 0.0f;
 			Destroy (other.gameObject);
@@ -450,10 +507,10 @@ public class Player : MonoBehaviour {
 	}
 
 	void OnTriggerExit(Collider other) {
-		Debug.Log ("OnTriggerExit");
+		//Debug.Log ("OnTriggerExit");
 	} 
 
 	void OnTriggerStay(Collider other) {
-		Debug.Log ("OnTriggerStay");
+		//Debug.Log ("OnTriggerStay");
 	}
 }

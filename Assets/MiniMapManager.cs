@@ -24,7 +24,6 @@ public class MiniMapManager : MonoBehaviour {
 	public void setProgressPlayer1(float progress) {
 		float distance = this.miniMapEndXPosition - this.miniMapStartXPosition;
 		float newPosition = this.miniMapStartXPosition + (distance * progress);
-		Debug.Log ("new Position: " + newPosition);
 		this.positionP1.transform.position = new Vector3(this.positionP1.transform.position.x, this.positionP1.transform.position.y, newPosition);
 	}
 
