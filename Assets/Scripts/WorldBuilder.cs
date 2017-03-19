@@ -23,7 +23,7 @@ public class WorldBuilder : MonoBehaviour {
 	public int moneyProbability = 30;
 	public int trashcanProbability = 100;
 	public int trashbagProbability = 100;
-	public float startTime = 5.5f;
+	public float startTime = 6.0f;
 
 	// private variables
 	private float worldXProgress = 0.0f;
