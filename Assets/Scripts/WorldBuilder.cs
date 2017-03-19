@@ -23,11 +23,13 @@ public class WorldBuilder : MonoBehaviour {
 	public int moneyProbability = 30;
 	public int trashcanProbability = 100;
 	public int trashbagProbability = 100;
+	public float startTime = 5.5f;
 
 	// private variables
 	private float worldXProgress = 0.0f;
 	private float buildNextWorldPartDelta = 60.0f;
 	private int numberOfWorldPartsCreated = 0;
+	private float timeTillStart;
 
 	/*
 	private ArrayList leftWomens = new ArrayList();
@@ -38,6 +40,67 @@ public class WorldBuilder : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
 		this.worldXProgress = this.worldPart.transform.position.x;
+
+		this.timeTillStart = this.startTime;
+
+		// create the world
+		if (this.numberOfWorldPartsCreated >= (this.numberOfWorldParts + 4)) {
+			return;
+		}
+
+		GameObject player1 = GameObject.Find("player1");
+		GameObject player2 = GameObject.Find ("player2");
+
+		float xProgress = this.worldXProgress;
+
+		// x-Axis is the axis where the player moves forward
+	
+		while (this.numberOfWorldPartsCreated < (this.numberOfWorldParts + 2)) {
+			// create a new world-part
+			GameObject newWorldPart = Instantiate (this.worldPart);
+
+			// try to load new texture on the image
+			int leftTextureID = Random.Range (0, 2);
+			int rightTextureID = Random.Range (0, 2);
+
+			Texture2D leftTexture;
+			Texture2D rightTexture;
+
+			if (leftTextureID == 0) {
+				leftTexture = Resources.Load ("house_left_01") as Texture2D;
+			} else {
+				leftTexture = Resources.Load ("house_left_02") as Texture2D;
+			}
+
+			if (rightTextureID == 0) {
+				rightTexture = Resources.Load ("house_right_01") as Texture2D;
+			} else {
+				rightTexture = Resources.Load ("house_right_02") as Texture2D;
+			}
+
+			Material leftMaterial = new Material (Shader.Find ("Standard"));
+			leftMaterial.mainTexture = leftTexture;
+
+			Material rightMaterial = new Material (Shader.Find ("Standard"));
+			rightMaterial.mainTexture = rightTexture;
+
+			//Material testMaterial = new Material (Shader.Find("Standard"));
+			//testMaterial.mainTexture = testTexture;
+			GameObject wallLeft = newWorldPart.transform.Find ("Houses_L").gameObject;
+			GameObject wallRight = newWorldPart.transform.Find ("Houses_R").gameObject;
+			//Debug.Log ("wallleft: " + wallLeft);
+			wallRight.GetComponentInParent<MeshRenderer> ().material = rightMaterial;
+			wallLeft.GetComponent<MeshRenderer> ().material = leftMaterial;
+
+			newWorldPart.transform.position = new Vector3 (xProgress + 16.0f, this.worldPart.transform.position.y, this.worldPart.transform.position.z);
+			xProgress += 16.0f;
+			this.numberOfWorldPartsCreated++;
+		}
+
+		GameObject endWall = GameObject.Find ("Houses_End");
+		endWall.transform.position = new Vector3 (xProgress, endWall.transform.position.y, endWall.transform.position.z);
+
+		//this.worldXProgress += 16.0f;
 	}
 	
 	// Update is called once per frame
@@ -48,6 +111,13 @@ public class WorldBuilder : MonoBehaviour {
 			return;
 		}
 
+		if (this.timeTillStart > 0.0f) {
+			this.timeTillStart -= Time.deltaTime;
+			return;
+		}
+
+
+
 		GameObject player1 = GameObject.Find("player1");
 		GameObject player2 = GameObject.Find ("player2");
 
@@ -55,6 +125,7 @@ public class WorldBuilder : MonoBehaviour {
 		if (player1.transform.position.x > (this.worldXProgress - this.buildNextWorldPartDelta) ||
 			player2.transform.position.x > (this.worldXProgress - this.buildNextWorldPartDelta)) {
 		
+			/*
 			// create a new world-part
 			GameObject newWorldPart = Instantiate(this.worldPart);
 
@@ -99,6 +170,8 @@ public class WorldBuilder : MonoBehaviour {
 			if (this.numberOfWorldPartsCreated >= (this.numberOfWorldParts + 2)) {
 				return;	
 			}
+			*/
+			this.worldXProgress += 16.0f;
 
 
 			// make random speeder

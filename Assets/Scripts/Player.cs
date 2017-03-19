@@ -25,6 +25,7 @@ public class Player : MonoBehaviour {
 	public GameObject grabonGranny;
 	public GameObject grabonFatty;
 	public GameObject grabonProstitute;
+	public GameObject camera;
 
 	public Lane lane = Lane.Middle; 
 	public PlayerNumber playerNumber = PlayerNumber.Player1;
@@ -36,6 +37,8 @@ public class Player : MonoBehaviour {
 	public float fattyMultiplier = 0.7f;
 	public float speedTime = 2.5f;
 	public float cakeTime = 2.0f;
+	public float startTime = 4.0f;
+	public float preMovementTime = 1.0f;
 
 	// private variables
 	private float speedTimeRemaining = 0.0f;
@@ -45,6 +48,15 @@ public class Player : MonoBehaviour {
 	private float cakeTimeRemaining = 0.0f;
 	private float startXPosition;
 	private float goalXPosition;
+	private float timeTillStart;
+
+	private Vector3 initialCameraPosition;
+	private Vector3 cameraStartLerpPosition;
+	private float timePassed = 0.0f;
+	private float preMovementTimePassed = 0.0f;
+	private float cameraInitialAngle;
+	private float cameraStartLerpAngle;
+	private bool adjustedCameraOnce = false;
 
 
 	// Use this for initialization
@@ -52,10 +64,52 @@ public class Player : MonoBehaviour {
 		this.startXPosition = this.transform.position.x;
 		float worldLength = GameObject.Find ("Logic").GetComponent<WorldBuilder> ().getWorldXLength();
 		this.goalXPosition = this.startXPosition + worldLength;
+		this.timeTillStart = this.startTime;
+		this.preMovementTimePassed = this.preMovementTime;
+		this.initialCameraPosition = this.camera.transform.position;
+		this.cameraInitialAngle = this.camera.transform.localRotation.eulerAngles.x;
+
+		// move camera to end of line and rotate it
+		this.camera.transform.position = new Vector3(GameObject.Find ("Logic").GetComponent<WorldBuilder> ().getWorldXLength(), this.initialCameraPosition.y, this.initialCameraPosition.z);
+		this.cameraStartLerpPosition = this.camera.transform.position;
+		this.camera.transform.rotation = Quaternion.Euler(0.0f, this.camera.transform.rotation.eulerAngles.y, this.camera.transform.rotation.eulerAngles.z);
 	}
 	
 	// Update is called once per frame
 	void Update () {
+
+		if (this.preMovementTimePassed > 0.0f) {
+			this.preMovementTimePassed -= Time.deltaTime;
+			return;
+		}
+
+		if (this.timeTillStart > 0.0f) {
+			this.timeTillStart -= Time.deltaTime;
+
+			// make camera lerp
+			float cameraXPosition = Mathf.SmoothStep(this.cameraStartLerpPosition.x, this.initialCameraPosition.x, this.timePassed / this.startTime);
+			Vector3 cameraPosition = new Vector3 (cameraXPosition, this.camera.transform.position.y, this.camera.transform.position.z);
+			//Vector3 cameraPosition = Vector3.Lerp (this.cameraStartLerpPosition, this.initialCameraPosition, this.timePassed / this.startTime);
+			this.camera.transform.position = cameraPosition;
+
+			//float cameraAngle = Mathf.Lerp (0.0f, this.cameraInitialAngle, this.timePassed / this.startTime);
+			float cameraAngle = Mathf.SmoothStep (0.0f, this.cameraInitialAngle, this.timePassed / this.startTime);
+		
+			this.camera.transform.rotation = Quaternion.Euler (cameraAngle, this.camera.transform.rotation.eulerAngles.y, this.camera.transform.rotation.eulerAngles.z);
+
+
+			this.timePassed += Time.deltaTime;
+
+			return;
+		} else {
+			if (this.adjustedCameraOnce == false) {
+				// do only once
+				this.camera.transform.position = this.initialCameraPosition;
+				this.camera.transform.rotation = Quaternion.Euler (this.cameraInitialAngle, this.camera.transform.rotation.eulerAngles.y, this.camera.transform.rotation.eulerAngles.z);
+				this.adjustedCameraOnce = true;
+			}
+		}
+
 
 		// decrease times
 		this.speedTimeRemaining -= Time.deltaTime;
