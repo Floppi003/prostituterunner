@@ -58,6 +58,8 @@ public class Player : MonoBehaviour {
 	private float cameraStartLerpAngle;
 	private bool adjustedCameraOnce = false;
 
+	private AudioPlayer audioPlayer;
+
 
 	// Use this for initialization
 	void Start () {
@@ -70,9 +72,11 @@ public class Player : MonoBehaviour {
 		this.cameraInitialAngle = this.camera.transform.localRotation.eulerAngles.x;
 
 		// move camera to end of line and rotate it
-		this.camera.transform.position = new Vector3(GameObject.Find ("Logic").GetComponent<WorldBuilder> ().getWorldXLength(), this.initialCameraPosition.y, this.initialCameraPosition.z);
+		this.camera.transform.position = new Vector3(GameObject.Find ("Logic").GetComponent<WorldBuilder> ().getWorldXLength() +6.0f, this.initialCameraPosition.y, this.initialCameraPosition.z);
 		this.cameraStartLerpPosition = this.camera.transform.position;
-		this.camera.transform.rotation = Quaternion.Euler(0.0f, this.camera.transform.rotation.eulerAngles.y, this.camera.transform.rotation.eulerAngles.z);
+		this.camera.transform.rotation = Quaternion.Euler(5.0f, this.camera.transform.rotation.eulerAngles.y, this.camera.transform.rotation.eulerAngles.z);
+
+		this.audioPlayer = GameObject.Find ("AudioPlayer").GetComponent<AudioPlayer> ();
 	}
 	
 	// Update is called once per frame
@@ -155,7 +159,7 @@ public class Player : MonoBehaviour {
 		}
 
 		if (Input.GetKeyDown(rightKey)) {
-			
+
 			// check if the right side is free
 			RaycastHit hit;
 			bool allowLaneChange = true;
@@ -184,6 +188,9 @@ public class Player : MonoBehaviour {
 						this.women.Dequeue (); // get rid of prostitute
 						this.updateMoneyText(); // update GUI
 						this.updateWomenText ();
+
+						// play audio
+						this.audioPlayer.playKissSound();
 					}
 				}
 			}
@@ -196,6 +203,7 @@ public class Player : MonoBehaviour {
 				if (woman is FatWoman) {
 					FatWoman fatty = (FatWoman)woman;
 					fatty.loveNeeded--;
+					this.audioPlayer.playWomanGroaningSound ();
 					if (fatty.loveNeeded <= 0) {
 						// she got enough love, get rid of fatty
 						this.women.Dequeue();
@@ -221,6 +229,9 @@ public class Player : MonoBehaviour {
 				otherPlayer.GetComponent<Player>().cakePlayer();
 				this.cake--;
 				this.updateCakeText();
+
+				// play audio
+				this.audioPlayer.playCakedSound();
 			}
 		}
 
@@ -262,6 +273,7 @@ public class Player : MonoBehaviour {
 			realSpeed = realSpeed * this.speedMultiplier;
 		} 
 
+		Debug.Log ("realSpeed: " + realSpeed);
 		if (this.transform.position.x < this.goalXPosition) { // only move forward if not at the goal yet
 			this.transform.Translate (realSpeed * Time.deltaTime * (-1), 0.0f, 0.0f);
 		}
@@ -289,7 +301,7 @@ public class Player : MonoBehaviour {
 
 			// already at goal! reload scene when pressing space bar
 			if (Input.GetKeyDown(KeyCode.Space)) {
-				SceneManager.LoadScene("Main");
+				SceneManager.LoadScene("Menu");
 			}
 		}
 
@@ -438,6 +450,10 @@ public class Player : MonoBehaviour {
 			GameObject fatButtonUI = canvas.transform.FindChild ("FattyButton").gameObject;
 			Image fatButton = fatButtonUI.GetComponent<Image> ();
 			fatButton.enabled = true;
+
+			GameObject fatButtonFrameUI = canvas.transform.FindChild ("FattyButtonFrame").gameObject;
+			Image fatButtonFrame = fatButtonFrameUI.GetComponent<Image> ();
+			fatButtonFrame.enabled = true;
 		
 		} else {
 			// show fat UI
@@ -448,6 +464,10 @@ public class Player : MonoBehaviour {
 			GameObject fatButtonUI = canvas.transform.FindChild ("FattyButton").gameObject;
 			Image fatButton = fatButtonUI.GetComponent<Image> ();
 			fatButton.enabled = false;
+
+			GameObject fatButtonFrameUI = canvas.transform.FindChild ("FattyButtonFrame").gameObject;
+			Image fatButtonFrame = fatButtonFrameUI.GetComponent<Image> ();
+			fatButtonFrame.enabled = false;
 		}
 
 		if (showProstitution == true) {
@@ -460,6 +480,10 @@ public class Player : MonoBehaviour {
 			Image prostituteButton = prostituteButtonUI.GetComponent<Image>();
 			prostituteButton.enabled = true;
 
+			GameObject prostituteFrameUI = canvas.transform.FindChild ("ProstituteButtonFrame").gameObject;
+			Image prostituteFrame = prostituteFrameUI.GetComponent<Image>();
+			prostituteFrame.enabled = true;
+
 		} else {
 			// show prostitute UI
 			GameObject prostituteImageUI = canvas.transform.FindChild("ProstituteImage").gameObject;
@@ -469,6 +493,10 @@ public class Player : MonoBehaviour {
 			GameObject prostituteButtonUI = canvas.transform.FindChild ("ProstituteButton").gameObject;
 			Image prostituteButton = prostituteButtonUI.GetComponent<Image>();
 			prostituteButton.enabled = false;
+
+			GameObject prostituteFrameUI = canvas.transform.FindChild ("ProstituteButtonFrame").gameObject;
+			Image prostituteFrame = prostituteFrameUI.GetComponent<Image>();
+			prostituteFrame.enabled = false;
 		}
 	}
 
@@ -496,6 +524,9 @@ public class Player : MonoBehaviour {
 		if (other.CompareTag ("Speeder")) {
 			this.speedTimeRemaining = this.speedTime;
 
+			// Play audio
+			this.audioPlayer.playSpeedboostSound ();
+
 			// check if it collided with prostitute
 		} else if (other.CompareTag ("Prostitute")) {
 			// make player slow again
@@ -521,6 +552,9 @@ public class Player : MonoBehaviour {
 			// create a cake object where money was
 			GameObject logic = GameObject.Find("Logic");
 			logic.GetComponent<WorldBuilder> ().createCakeAtLocation (other.transform.position, this.playerNumber);
+
+			// Play audio
+			this.audioPlayer.playMoneyCollectedSound();
 
 		} else if (other.CompareTag ("Fatty")) {
 			// make player slow again
@@ -553,10 +587,28 @@ public class Player : MonoBehaviour {
 		}
 
 		if (other.CompareTag(importantCakeTag)) {
-			// collected a cake by the other player! 
+			// collected a cake by the other player! --> instantly cake other player!
+			Destroy(other.gameObject);
+
+			// "cake" the other player
+			GameObject otherPlayer = null;
+			if (this.playerNumber == PlayerNumber.Player1) {
+				// cake player 2
+				otherPlayer = GameObject.Find("player2");
+			} else {
+				// cake player 2
+				otherPlayer = GameObject.Find("player1");
+			}
+
+			otherPlayer.GetComponent<Player>().cakePlayer();
+			this.audioPlayer.playCakedSound ();
+			/*
 			this.cake++;
 			this.updateCakeText ();
-			Destroy(other.gameObject);
+
+			// play audio
+			this.audioPlayer.playCakeCollectedSound();
+			*/
 		}
 	}
 

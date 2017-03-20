@@ -1,0 +1,160 @@
+
+MAlescaled.png
+size: 1024,512
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+Set1
+  rotate: false
+  xy: 46, 28
+  size: 45, 31
+  orig: 45, 31
+  offset: 0, 0
+  index: -1
+Set10
+  rotate: false
+  xy: 272, 91
+  size: 91, 121
+  orig: 91, 121
+  offset: 0, 0
+  index: -1
+Set11
+  rotate: true
+  xy: 645, 321
+  size: 85, 142
+  orig: 85, 142
+  offset: 0, 0
+  index: -1
+Set12
+  rotate: false
+  xy: 496, 361
+  size: 147, 149
+  orig: 147, 149
+  offset: 0, 0
+  index: -1
+Set13
+  rotate: false
+  xy: 2, 200
+  size: 231, 310
+  orig: 231, 310
+  offset: 0, 0
+  index: -1
+Set14
+  rotate: false
+  xy: 2, 61
+  size: 192, 137
+  orig: 192, 137
+  offset: 0, 0
+  index: -1
+Set15
+  rotate: false
+  xy: 370, 207
+  size: 105, 133
+  orig: 105, 133
+  offset: 0, 0
+  index: -1
+Set16
+  rotate: true
+  xy: 235, 214
+  size: 106, 133
+  orig: 106, 133
+  offset: 0, 0
+  index: -1
+Set17
+  rotate: false
+  xy: 365, 100
+  size: 96, 105
+  orig: 96, 105
+  offset: 0, 0
+  index: -1
+Set18
+  rotate: true
+  xy: 365, 2
+  size: 96, 105
+  orig: 96, 105
+  offset: 0, 0
+  index: -1
+Set19
+  rotate: true
+  xy: 463, 124
+  size: 74, 100
+  orig: 74, 100
+  offset: 0, 0
+  index: -1
+Set2
+  rotate: false
+  xy: 2, 23
+  size: 42, 36
+  orig: 42, 36
+  offset: 0, 0
+  index: -1
+Set20
+  rotate: false
+  xy: 472, 22
+  size: 74, 100
+  orig: 74, 100
+  offset: 0, 0
+  index: -1
+Set21
+  rotate: true
+  xy: 477, 200
+  size: 83, 113
+  orig: 83, 113
+  offset: 0, 0
+  index: -1
+Set22
+  rotate: false
+  xy: 235, 322
+  size: 126, 188
+  orig: 126, 188
+  offset: 0, 0
+  index: -1
+Set3
+  rotate: false
+  xy: 196, 74
+  size: 74, 124
+  orig: 74, 124
+  offset: 0, 0
+  index: -1
+Set4
+  rotate: true
+  xy: 496, 285
+  size: 74, 124
+  orig: 74, 124
+  offset: 0, 0
+  index: -1
+Set5
+  rotate: true
+  xy: 645, 408
+  size: 102, 157
+  orig: 102, 157
+  offset: 0, 0
+  index: -1
+Set6
+  rotate: true
+  xy: 804, 420
+  size: 90, 161
+  orig: 90, 161
+  offset: 0, 0
+  index: -1
+Set7
+  rotate: false
+  xy: 363, 342
+  size: 131, 168
+  orig: 131, 168
+  offset: 0, 0
+  index: -1
+Set8
+  rotate: true
+  xy: 967, 357
+  size: 75, 55
+  orig: 75, 55
+  offset: 0, 0
+  index: -1
+Set9
+  rotate: true
+  xy: 967, 434
+  size: 76, 55
+  orig: 76, 55
+  offset: 0, 0
+  index: -1

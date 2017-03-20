@@ -1,0 +1,27 @@
+
+ui sketch.png
+size: 1024,256
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+Layer25
+  rotate: false
+  xy: 260, 82
+  size: 179, 169
+  orig: 179, 169
+  offset: 0, 0
+  index: -1
+Layer28
+  rotate: false
+  xy: 2, 2
+  size: 256, 249
+  orig: 256, 249
+  offset: 0, 0
+  index: -1
+Layer29
+  rotate: false
+  xy: 441, 143
+  size: 117, 108
+  orig: 117, 108
+  offset: 0, 0
+  index: -1

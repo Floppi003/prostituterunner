@@ -100,6 +100,11 @@ public class WorldBuilder : MonoBehaviour {
 		GameObject endWall = GameObject.Find ("Houses_End");
 		endWall.transform.position = new Vector3 (xProgress, endWall.transform.position.y, endWall.transform.position.z);
 
+		GameObject finishGirl = GameObject.Find ("FinishGirl");
+		finishGirl.transform.position = new Vector3 (xProgress - 20.0f, finishGirl.transform.position.y, finishGirl.transform.position.z);
+
+		GameObject goal = GameObject.Find ("Goal");
+		goal.transform.position = new Vector3 (xProgress - 30.0f, goal.transform.position.y, goal.transform.position.z);
 		//this.worldXProgress += 16.0f;
 	}
 	
